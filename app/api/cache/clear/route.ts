@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clearCache, getCacheInfo } from "@/lib/cache";
+import { revalidateTag } from "next/cache";
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
@@ -17,22 +17,37 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  // Get cache info before clearing
-  const infoBefore = getCacheInfo();
+  // Optionally clear specific tags
+  const tag = request.nextUrl.searchParams.get("tag");
 
-  // Clear the cache
-  const result = clearCache();
+  try {
+    if (tag && ["profile", "socials", "portfolio"].includes(tag)) {
+      // Next.js 16 requires a cacheLife profile as second argument
+      revalidateTag(tag, "max");
+      return NextResponse.json({
+        success: true,
+        message: `Cache cleared for tag: ${tag}`,
+        revalidated: [tag],
+      });
+    }
 
-  return NextResponse.json({
-    success: result.success,
-    message: result.success ? "Cache cleared successfully" : "Failed to clear cache",
-    clearedFiles: result.clearedFiles,
-    fileCountBefore: infoBefore.files.length,
-  });
+    // Clear all data caches
+    revalidateTag("all-data", "max");
+
+    return NextResponse.json({
+      success: true,
+      message: "All caches cleared successfully",
+      revalidated: ["profile", "socials", "portfolio"],
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to clear cache", details: String(error) },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
-  // Also support POST with token in header
   const token =
     request.headers.get("x-cache-token") ||
     request.nextUrl.searchParams.get("token");
@@ -49,13 +64,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const infoBefore = getCacheInfo();
-  const result = clearCache();
+  try {
+    revalidateTag("all-data", "max");
 
-  return NextResponse.json({
-    success: result.success,
-    message: result.success ? "Cache cleared successfully" : "Failed to clear cache",
-    clearedFiles: result.clearedFiles,
-    fileCountBefore: infoBefore.files.length,
-  });
+    return NextResponse.json({
+      success: true,
+      message: "All caches cleared successfully",
+      revalidated: ["profile", "socials", "portfolio"],
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to clear cache", details: String(error) },
+      { status: 500 }
+    );
+  }
 }

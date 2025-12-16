@@ -2,33 +2,43 @@ import { Hero } from "@/components/hero";
 import { SocialLinks } from "@/components/social-links";
 import { Portfolio } from "@/components/portfolio";
 import {
+  getProfile,
   getSocialLinks,
   getPortfolioProjects,
+  type Profile,
   type SocialLink,
   type PortfolioProject,
 } from "@/lib/data";
 
+const defaultProfile: Profile = {
+  name: "Your Name",
+  title: "Developer & Designer",
+  bio: "Building beautiful digital experiences",
+};
+
 export default async function Home() {
   // Fetch data from Google Sheets (with caching)
+  let profile: Profile = defaultProfile;
   let socialLinks: SocialLink[] = [];
   let portfolioProjects: PortfolioProject[] = [];
 
   try {
-    [socialLinks, portfolioProjects] = await Promise.all([
+    [profile, socialLinks, portfolioProjects] = await Promise.all([
+      getProfile(),
       getSocialLinks(),
       getPortfolioProjects(),
     ]);
   } catch (error) {
     console.error("Failed to fetch data:", error);
-    // Continue with empty arrays - components will handle gracefully
+    // Continue with defaults - components will handle gracefully
   }
 
   return (
     <main className="min-h-screen">
       <Hero
-        name="Your Name"
-        title="Developer & Designer"
-        bio="Building beautiful digital experiences with modern technologies"
+        name={profile.name}
+        title={profile.title}
+        bio={profile.bio}
       />
 
       <SocialLinks links={socialLinks} />
@@ -36,7 +46,7 @@ export default async function Home() {
       <Portfolio projects={portfolioProjects} />
 
       <footer className="py-8 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} Your Name. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
       </footer>
     </main>
   );

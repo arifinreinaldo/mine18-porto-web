@@ -1,5 +1,11 @@
 import { google } from "googleapis";
 
+export interface Profile {
+  name: string;
+  title: string;
+  bio: string;
+}
+
 export interface SocialLink {
   platform: string;
   url: string;
@@ -90,4 +96,42 @@ export async function fetchPortfolioProjects(): Promise<PortfolioProject[]> {
     }))
     .filter((project) => project.title)
     .sort((a, b) => a.order - b.order);
+}
+
+export async function fetchProfile(): Promise<Profile> {
+  const rows = await getSheetData("profile");
+
+  // Profile sheet structure (key-value pairs):
+  // | key   | value                    |
+  // | name  | Your Name                |
+  // | title | Developer & Designer     |
+  // | bio   | Building beautiful...    |
+
+  const defaultProfile: Profile = {
+    name: "Your Name",
+    title: "Developer & Designer",
+    bio: "Building beautiful digital experiences",
+  };
+
+  if (rows.length < 2) {
+    return defaultProfile;
+  }
+
+  // Skip header row and convert to key-value map
+  const dataRows = rows.slice(1);
+  const profileMap: Record<string, string> = {};
+
+  for (const row of dataRows) {
+    const key = (row[0] || "").toLowerCase().trim();
+    const value = row[1] || "";
+    if (key && value) {
+      profileMap[key] = value;
+    }
+  }
+
+  return {
+    name: profileMap["name"] || defaultProfile.name,
+    title: profileMap["title"] || defaultProfile.title,
+    bio: profileMap["bio"] || defaultProfile.bio,
+  };
 }
