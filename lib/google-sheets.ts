@@ -16,8 +16,10 @@ export interface SocialLink {
 export interface PortfolioProject {
   title: string;
   description: string;
-  url: string;
   image: string;
+  webUrl: string;
+  playStoreUrl: string;
+  appStoreUrl: string;
   tags: string[];
   order: number;
 }
@@ -126,14 +128,17 @@ export async function fetchPortfolioProjects(): Promise<PortfolioProject[]> {
   // Skip header row
   const dataRows = rows.slice(1);
 
+  // Column order: title, description, image, webUrl, playStoreUrl, appStoreUrl, tags, order
   return dataRows
     .map((row) => ({
       title: row[0] || "",
       description: row[1] || "",
-      url: row[2] || "",
-      image: row[3] || "",
-      tags: (row[4] || "").split(",").map((tag: string) => tag.trim()).filter(Boolean),
-      order: parseInt(row[5] || "0", 10),
+      image: row[2] || "",
+      webUrl: row[3] || "",
+      playStoreUrl: row[4] || "",
+      appStoreUrl: row[5] || "",
+      tags: (row[6] || "").split(",").map((tag: string) => tag.trim()).filter(Boolean),
+      order: parseInt(row[7] || "0", 10),
     }))
     .filter((project) => project.title)
     .sort((a, b) => a.order - b.order);

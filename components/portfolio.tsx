@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
+import { Globe, Play, Apple } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { PortfolioProject } from "@/lib/data";
 
 const container = {
@@ -50,15 +51,12 @@ export function Portfolio({ projects }: PortfolioProps) {
         whileInView="show"
         viewport={{ once: true }}
       >
-        {projects.map((project) => (
-          <motion.div key={project.title} variants={item}>
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block group h-full"
-            >
-              <Card className="overflow-hidden h-full transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm">
+        {projects.map((project) => {
+          const hasLinks = project.webUrl || project.playStoreUrl || project.appStoreUrl;
+
+          return (
+            <motion.div key={project.title} variants={item}>
+              <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm">
                 {project.image && (
                   <div className="relative h-48 overflow-hidden bg-muted">
                     <Image
@@ -67,27 +65,78 @@ export function Portfolio({ projects }: PortfolioProps) {
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <motion.div
-                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <ExternalLink className="w-5 h-5 text-white drop-shadow-lg" />
-                    </motion.div>
                   </div>
                 )}
 
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                    {project.title}
-                  </CardTitle>
+                  <CardTitle className="text-xl">{project.title}</CardTitle>
                   <CardDescription className="line-clamp-2">
                     {project.description}
                   </CardDescription>
                 </CardHeader>
 
-                {project.tags.length > 0 && (
-                  <CardContent className="pt-0">
+                <CardContent className="pt-0 flex-1 flex flex-col justify-between gap-4">
+                  {/* Link Buttons */}
+                  {hasLinks && (
+                    <div className="flex flex-wrap gap-2">
+                      {project.webUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 min-w-[80px]"
+                          asChild
+                        >
+                          <a
+                            href={project.webUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Globe className="w-4 h-4 mr-1.5" />
+                            Web
+                          </a>
+                        </Button>
+                      )}
+
+                      {project.playStoreUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 min-w-[80px]"
+                          asChild
+                        >
+                          <a
+                            href={project.playStoreUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Play className="w-4 h-4 mr-1.5" />
+                            Play Store
+                          </a>
+                        </Button>
+                      )}
+
+                      {project.appStoreUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 min-w-[80px]"
+                          asChild
+                        >
+                          <a
+                            href={project.appStoreUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Apple className="w-4 h-4 mr-1.5" />
+                            App Store
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {project.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {project.tags.map((tag) => (
                         <Badge
@@ -99,12 +148,12 @@ export function Portfolio({ projects }: PortfolioProps) {
                         </Badge>
                       ))}
                     </div>
-                  </CardContent>
-                )}
+                  )}
+                </CardContent>
               </Card>
-            </a>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </motion.div>
     </section>
   );

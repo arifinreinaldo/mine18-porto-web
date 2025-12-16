@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/hero";
 import { SocialLinks } from "@/components/social-links";
 import { Portfolio } from "@/components/portfolio";
@@ -15,6 +16,21 @@ const defaultProfile: Profile = {
   title: "Developer & Designer",
   bio: "Building beautiful digital experiences",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  let profile = defaultProfile;
+
+  try {
+    profile = await getProfile();
+  } catch {
+    // Use default profile
+  }
+
+  return {
+    title: `${profile.name} | Portfolio`,
+    description: profile.bio,
+  };
+}
 
 export default async function Home() {
   // Fetch data from Google Sheets (with caching)
