@@ -22,12 +22,53 @@ export interface PortfolioProject {
   order: number;
 }
 
+function formatPrivateKey(key: string): string {
+  // Remove any surrounding quotes
+  key = key.replace(/^["']|["']$/g, "");
+
+  // Replace literal \n with actual newlines
+  key = key.replace(/\\n/g, "\n");
+
+  // If key has no newlines (all on one line), format it properly
+  if (!key.includes("\n") || key.split("\n").length < 3) {
+    // Extract the base64 content between the markers
+    const beginMarker = "-----BEGIN PRIVATE KEY-----";
+    const endMarker = "-----END PRIVATE KEY-----";
+
+    const beginIndex = key.indexOf(beginMarker);
+    const endIndex = key.indexOf(endMarker);
+
+    if (beginIndex !== -1 && endIndex !== -1) {
+      const base64Content = key
+        .substring(beginIndex + beginMarker.length, endIndex)
+        .replace(/\s/g, ""); // Remove any whitespace
+
+      // Split base64 into 64-character lines (PEM standard)
+      const lines: string[] = [];
+      for (let i = 0; i < base64Content.length; i += 64) {
+        lines.push(base64Content.substring(i, i + 64));
+      }
+
+      key = `${beginMarker}\n${lines.join("\n")}\n${endMarker}`;
+    }
+  }
+
+  return key;
+}
+
 function getGoogleAuth() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const rawKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (!email || !privateKey) {
+  if (!email || !rawKey) {
     throw new Error("Missing Google service account credentials");
+  }
+
+  const privateKey = formatPrivateKey(rawKey);
+
+  // Ensure the key has proper PEM format
+  if (!privateKey.includes("-----BEGIN PRIVATE KEY-----")) {
+    throw new Error("Invalid private key format - missing BEGIN marker");
   }
 
   return new google.auth.JWT({
