@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(git -C /Users/reinaldoarifin/VibeProjects/mine18-porto-web ls-tree:*)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)"
+    ]
+  }
+}
