@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   const tag = request.nextUrl.searchParams.get("tag");
 
   try {
-    if (tag && ["profile", "socials", "portfolio"].includes(tag)) {
+    if (tag && ["profile", "socials", "portfolio", "skills"].includes(tag)) {
       // Next.js 16 requires a cacheLife profile as second argument
       revalidateTag(tag, "max");
       return NextResponse.json({
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "All caches cleared successfully",
-      revalidated: ["profile", "socials", "portfolio"],
+      revalidated: ["profile", "socials", "portfolio", "skills"],
     });
   } catch (error) {
     return NextResponse.json(

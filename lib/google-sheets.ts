@@ -4,6 +4,14 @@ export interface Profile {
   name: string;
   title: string;
   bio: string;
+  about: string;
+  avatar: string;
+  email: string;
+}
+
+export interface Skill {
+  name: string;
+  order: number;
 }
 
 export interface SocialLink {
@@ -147,16 +155,13 @@ export async function fetchPortfolioProjects(): Promise<PortfolioProject[]> {
 export async function fetchProfile(): Promise<Profile> {
   const rows = await getSheetData("profile");
 
-  // Profile sheet structure (key-value pairs):
-  // | key   | value                    |
-  // | name  | Your Name                |
-  // | title | Developer & Designer     |
-  // | bio   | Building beautiful...    |
-
   const defaultProfile: Profile = {
     name: "Your Name",
     title: "Developer & Designer",
     bio: "Building beautiful digital experiences",
+    about: "",
+    avatar: "",
+    email: "",
   };
 
   if (rows.length < 2) {
@@ -179,5 +184,27 @@ export async function fetchProfile(): Promise<Profile> {
     name: profileMap["name"] || defaultProfile.name,
     title: profileMap["title"] || defaultProfile.title,
     bio: profileMap["bio"] || defaultProfile.bio,
+    about: profileMap["about"] || defaultProfile.about,
+    avatar: profileMap["avatar"] || defaultProfile.avatar,
+    email: profileMap["email"] || defaultProfile.email,
   };
+}
+
+export async function fetchSkills(): Promise<Skill[]> {
+  const rows = await getSheetData("skills");
+
+  if (rows.length < 2) {
+    return [];
+  }
+
+  // Skip header row
+  const dataRows = rows.slice(1);
+
+  return dataRows
+    .map((row) => ({
+      name: row[0] || "",
+      order: parseInt(row[1] || "0", 10),
+    }))
+    .filter((skill) => skill.name)
+    .sort((a, b) => a.order - b.order);
 }

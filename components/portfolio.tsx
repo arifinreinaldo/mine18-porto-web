@@ -33,16 +33,17 @@ export function Portfolio({ projects }: PortfolioProps) {
   }
 
   return (
-    <section className="py-16 px-4 bg-muted/30">
-      <motion.h2
-        className="text-3xl font-bold text-center mb-10"
+    <section className="py-20 px-4 bg-muted/30">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
+        className="text-center mb-12"
       >
-        Featured Projects
-      </motion.h2>
+        <p className="section-heading">Projects</p>
+        <h2 className="section-title">Featured work</h2>
+      </motion.div>
 
       <motion.div
         className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"

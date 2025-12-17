@@ -3,9 +3,11 @@ import {
   fetchSocialLinks,
   fetchPortfolioProjects,
   fetchProfile,
+  fetchSkills,
   type SocialLink,
   type PortfolioProject,
   type Profile,
+  type Skill,
 } from "./google-sheets";
 
 // Cache for 30 days (in seconds)
@@ -44,4 +46,15 @@ export const getPortfolioProjects = unstable_cache(
   }
 );
 
-export type { SocialLink, PortfolioProject, Profile };
+export const getSkills = unstable_cache(
+  async (): Promise<Skill[]> => {
+    return fetchSkills();
+  },
+  ["skills"],
+  {
+    revalidate: CACHE_DURATION,
+    tags: ["skills", "all-data"],
+  }
+);
+
+export type { SocialLink, PortfolioProject, Profile, Skill };
