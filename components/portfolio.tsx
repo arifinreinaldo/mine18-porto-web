@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { Globe, Play, Apple } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ImageCarousel } from "@/components/image-carousel";
 import type { PortfolioProject } from "@/lib/data";
 
 const container = {
@@ -58,15 +58,8 @@ export function Portfolio({ projects }: PortfolioProps) {
           return (
             <motion.div key={project.title} variants={item}>
               <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur-sm">
-                {project.image && (
-                  <div className="relative h-48 overflow-hidden bg-muted">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
+                {project.images.length > 0 && (
+                  <ImageCarousel images={project.images} alt={project.title} />
                 )}
 
                 <CardHeader className="pb-3">
