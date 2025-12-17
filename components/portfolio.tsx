@@ -68,7 +68,7 @@ export function Portfolio({ projects }: PortfolioProps) {
                     <CardTitle className="text-xl">{project.title}</CardTitle>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <CardDescription className="line-clamp-2 cursor-pointer">
+                        <CardDescription className="line-clamp-3 cursor-pointer">
                           {project.description}
                         </CardDescription>
                       </TooltipTrigger>

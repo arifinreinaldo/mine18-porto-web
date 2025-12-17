@@ -70,13 +70,13 @@ export default async function Home() {
           socials={socialLinks}
         />
 
-        <About about={profile.about} />
-
-        <Skills skills={skills} />
-
         <section id="projects">
           <Portfolio projects={portfolioProjects} />
         </section>
+
+        <About about={profile.about} />
+
+        <Skills skills={skills} />
 
         <Contact email={profile.email} socials={socialLinks} />
       </main>

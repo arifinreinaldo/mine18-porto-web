@@ -29,6 +29,7 @@ export interface PortfolioProject {
   playStoreUrl: string;
   appStoreUrl: string;
   tags: string[];
+  isVisible: boolean;
   order: number;
 }
 
@@ -136,7 +137,7 @@ export async function fetchPortfolioProjects(): Promise<PortfolioProject[]> {
   // Skip header row
   const dataRows = rows.slice(1);
 
-  // Column order: title, description, images (comma-separated), webUrl, playStoreUrl, appStoreUrl, tags, order
+  // Column order: title, description, images (comma-separated), webUrl, playStoreUrl, appStoreUrl, tags, isVisible, order
   return dataRows
     .map((row) => ({
       title: row[0] || "",
@@ -146,9 +147,10 @@ export async function fetchPortfolioProjects(): Promise<PortfolioProject[]> {
       playStoreUrl: row[4] || "",
       appStoreUrl: row[5] || "",
       tags: (row[6] || "").split(",").map((tag: string) => tag.trim()).filter(Boolean),
-      order: parseInt(row[7] || "0", 10),
+      isVisible: row[7] !== "0",
+      order: parseInt(row[8] || "0", 10),
     }))
-    .filter((project) => project.title)
+    .filter((project) => project.title && project.isVisible)
     .sort((a, b) => a.order - b.order);
 }
 
